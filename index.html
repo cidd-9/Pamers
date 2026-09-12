@@ -1,1 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Special Surprise</title>
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body data-theme="romantic">
+
+  <!-- Background Particle Canvas -->
+  <canvas id="fx-canvas"></canvas>
+
+  <!-- Theme Selector Floating Button -->
+  <button id="theme-toggle-btn" class="floating-btn" title="Change Website Theme">
+    <i class="fa-solid fa-palette"></i>
+  </button>
+
+  <!-- Simple Theme Selection Drawer -->
+  <aside id="theme-panel" class="sidebar hidden">
+    <div class="sidebar-header">
+      <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Choose a Theme</h3>
+      <button id="close-sidebar-btn" class="icon-btn">&times;</button>
+    </div>
+
+    <div class="theme-options">
+      <button class="theme-card active" onclick="window.setTheme('romantic')">
+        <span class="theme-color-preview romantic-preview"></span>
+        <span>Romantic Pink</span>
+      </button>
+
+      <button class="theme-card" onclick="window.setTheme('midnight')">
+        <span class="theme-color-preview midnight-preview"></span>
+        <span>Midnight Purple</span>
+      </button>
+
+      <button class="theme-card" onclick="window.setTheme('sunset')">
+        <span class="theme-color-preview sunset-preview"></span>
+        <span>Sunset Glow</span>
+      </button>
+
+      <button class="theme-card" onclick="window.setTheme('aurora')">
+        <span class="theme-color-preview aurora-preview"></span>
+        <span>Emerald Aurora</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Navigation Bar -->
+  <nav class="top-nav">
+    <div class="nav-links">
+      <button class="nav-item active" onclick="window.navigateTo(1)"><i class="fa-solid fa-heart"></i> Intro</button>
+      <button class="nav-item" onclick="window.navigateTo(2)"><i class="fa-solid fa-images"></i> Memories</button>
+      <button class="nav-item" onclick="window.navigateTo(3)"><i class="fa-solid fa-envelope-open-text"></i> Message</button>
+    </div>
+  </nav>
+
+  <!-- Main Viewport -->
+  <main class="app-container">
+
+    <!-- PAGE 1: HERO INTRO -->
+    <section id="page-1" class="page active-page">
+      <div class="card glass-card hero-card">
+        <div class="badge-pill"><i class="fa-solid fa-sparkles"></i> Made Just For You</div>
+        <h1 class="title-display">Hey Pretty Girl...</h1>
+        <p class="subtitle-display">
+          I built this small site just for you to celebrate our favorite memories and create something special together.
+        </p>
+        
+        <div class="hero-actions">
+          <button class="btn primary-btn" onclick="window.nextPage(2)">
+            Explore Memories <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2: PHOTO GALLERY -->
+    <section id="page-2" class="page">
+      <div class="card glass-card gallery-card">
+        <h2><i class="fa-solid fa-photo-film"></i> Our Memory Wall</h2>
+        <p class="section-subtitle">A few of my absolute favorite moments with you.</p>
+
+        <div id="gallery-grid" class="gallery-grid">
+          <!-- Photo 1: Replace img src with your own photo URL or local file path -->
+          <div class="memory-card">
+            <div class="img-wrapper">
+              <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=600&q=80" alt="Memory 1" />
+            </div>
+            <div class="card-caption">Pure sunshine & smiles ☀️</div>
+          </div>
+
+          <!-- Photo 2: Replace img src with your own photo URL or local file path -->
+          <div class="memory-card">
+            <div class="img-wrapper">
+              <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=600&q=80" alt="Memory 2" />
+            </div>
+            <div class="card-caption">Unforgettable moments ✨</div>
+          </div>
+
+          <!-- Photo 3: Replace img src with your own photo URL or local file path -->
+          <div class="memory-card">
+            <div class="img-wrapper">
+              <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=600&q=80" alt="Memory 3" />
+            </div>
+            <div class="card-caption">My favorite person ❤️</div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn secondary-btn" onclick="window.nextPage(1)">Back</button>
+          <button class="btn primary-btn" onclick="window.nextPage(3)">Read Message <i class="fa-solid fa-heart"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3: SPECIAL MESSAGE & PROPOSAL -->
+    <section id="page-3" class="page">
+      <div class="card glass-card message-card">
+        <div class="envelope-icon">💌</div>
+        <h2>Just Wanted To Say...</h2>
+
+        <div class="letter-box">
+          <p class="letter-body">
+            You bring so much light, color, and joy into everything around you. Getting to share these fun moments with you makes every single day so much better.
+          </p>
+          <p class="letter-highlight">
+            So, will you let me take you out on a date soon? 🌹
+          </p>
+        </div>
+
+        <div class="response-actions">
+          <button id="yes-btn" class="btn primary-btn pulse-anim" onclick="window.handleResponse('yes')">
+            Yes, absolutely! 💖
+          </button>
+          <button id="maybe-btn" class="btn playful-btn" onclick="window.handleResponse('maybe')">
+            Hmm, convince me more 😉
+          </button>
+        </div>
+
+        <div class="button-group">
+          <button class="btn secondary-btn" onclick="window.nextPage(2)">Back to Gallery</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Response Popup -->
+  <div id="response-modal" class="modal hidden">
+    <div class="modal-card glass-card">
+      <button class="modal-close" onclick="window.closeModal()">&times;</button>
+      <div id="modal-icon" class="modal-icon">🎉</div>
+      <h3 id="modal-title">Yay!</h3>
+      <p id="modal-desc">I can't wait! Pick a date and time, and I'll handle the rest.</p>
+      <button class="btn primary-btn" onclick="window.closeModal()">Awesome!</button>
+    </div>
+  </div>
+
+  <!-- Background Audio Element (Optional) -->
+  <audio id="bg-audio" loop></audio>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
 
