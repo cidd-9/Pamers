@@ -1,2 +1,0 @@
-# Pamers
-for u twinnyyyyy 
