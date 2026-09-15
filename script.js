@@ -1,36 +1,25 @@
 /* ==========================================================================
    1. NAVIGATION ENGINE
    ========================================================================== */
-
-/**
- * Robust navigation function attached directly to global window
- */
 window.navigateTo = function(target) {
   if (target === undefined || target === null) return;
 
-  // Format ID correctly ('1' -> 'page-1')
   let targetId = String(target).trim();
   if (!targetId.startsWith('page-')) {
     targetId = `page-${targetId}`;
   }
 
-  // Hide all pages
   const pages = document.querySelectorAll('.page');
-  pages.forEach(page => {
-    page.classList.remove('active-page');
-  });
+  pages.forEach(page => page.classList.remove('active-page'));
 
-  // Display target page
   const targetPage = document.getElementById(targetId);
   if (targetPage) {
     targetPage.classList.add('active-page');
-    // Force CSS reflow for fade animation
     targetPage.style.animation = 'none';
-    targetPage.offsetHeight; 
+    targetPage.offsetHeight; // Trigger reflow for animation reset
     targetPage.style.animation = '';
   }
 
-  // Update navbar active state
   const pageNum = parseInt(targetId.replace('page-', ''), 10);
   if (!isNaN(pageNum)) {
     const navItems = document.querySelectorAll('.nav-item');
@@ -51,15 +40,14 @@ window.nextPage = function(target) {
 };
 
 /* ==========================================================================
-   2. ONE-CLICK THEME ENGINE
+   2. THEME ENGINE
    ========================================================================== */
 window.setTheme = function(themeName) {
   document.body.setAttribute('data-theme', themeName);
 
-  // Update theme option card active state inside drawer
   const cards = document.querySelectorAll('.theme-card');
   cards.forEach(card => {
-    if (card.getAttribute('onclick').includes(themeName)) {
+    if (card.getAttribute('onclick') && card.getAttribute('onclick').includes(themeName)) {
       card.classList.add('active');
     } else {
       card.classList.remove('active');
@@ -68,9 +56,75 @@ window.setTheme = function(themeName) {
 };
 
 /* ==========================================================================
-   3. SIDEBAR & EVENT LISTENERS
+   3. AUTOMATIC BACKGROUND AUDIO CONTROLLER
+   ========================================================================== */
+function initAudioEngine() {
+  const audio = document.getElementById('bg-audio');
+  const musicBtn = document.getElementById('music-toggle-btn');
+  const musicIcon = document.getElementById('music-icon');
+  const startBtn = document.getElementById('start-app-btn');
+  const welcomeOverlay = document.getElementById('welcome-overlay');
+
+  let isPlaying = false;
+
+  function playAudio() {
+    if (!audio) return;
+    audio.play().then(() => {
+      isPlaying = true;
+      if (musicIcon) musicIcon.className = "fa-solid fa-volume-high";
+    }).catch(err => {
+      console.log("Audio waiting for user interaction:", err);
+    });
+  }
+
+  function pauseAudio() {
+    if (!audio) return;
+    audio.pause();
+    isPlaying = false;
+    if (musicIcon) musicIcon.className = "fa-solid fa-volume-xmark";
+  }
+
+  // If Welcome Overlay is used, play music when button clicked
+  if (startBtn && welcomeOverlay) {
+    startBtn.addEventListener('click', () => {
+      playAudio();
+      welcomeOverlay.classList.add('fade-out');
+      setTimeout(() => {
+        welcomeOverlay.style.display = 'none';
+      }, 500);
+    });
+  }
+
+  // Music toggle button listener (🔊 / 🔇)
+  if (musicBtn) {
+    musicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isPlaying) {
+        pauseAudio();
+      } else {
+        playAudio();
+      }
+    });
+  }
+
+  // Auto-play music as soon as she taps or clicks ANYTHING on screen
+  function handleFirstInteraction() {
+    if (!isPlaying) {
+      playAudio();
+    }
+    document.removeEventListener('click', handleFirstInteraction);
+    document.removeEventListener('touchstart', handleFirstInteraction);
+  }
+
+  document.addEventListener('click', handleFirstInteraction);
+  document.addEventListener('touchstart', handleFirstInteraction);
+}
+
+/* ==========================================================================
+   4. DOM CONTENT LOADED & INTERACTIVE LISTENERS
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
+  // Theme Drawer Controls
   const sidebar = document.getElementById('theme-panel');
   const toggleBtn = document.getElementById('theme-toggle-btn');
   const closeBtn = document.getElementById('close-sidebar-btn');
@@ -83,27 +137,37 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', () => sidebar.classList.add('hidden'));
   }
 
-  // Evasive "Maybe" Button Hover Effect
+  // Evasive "Chl hatt Nhi jana" Button Effect
   const maybeBtn = document.getElementById('maybe-btn');
   if (maybeBtn) {
-    maybeBtn.addEventListener('mouseover', () => {
+    const moveBtn = () => {
       const x = Math.floor(Math.random() * 200) - 100;
       const y = Math.floor(Math.random() * 120) - 60;
       maybeBtn.style.transform = `translate(${x}px, ${y}px)`;
+    };
+    maybeBtn.addEventListener('mouseover', moveBtn);
+    maybeBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveBtn();
     });
   }
 
-  // Dynamically load Confetti script
-  const confettiScript = document.createElement('script');
-  confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
-  document.head.appendChild(confettiScript);
+  // Load Confetti Library Dynamically
+  if (typeof confetti !== 'function') {
+    const confettiScript = document.createElement('script');
+    confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+    document.head.appendChild(confettiScript);
+  }
 
-  // Start background particle canvas animation
+  // Initialize Particles Background
   initParticles();
+
+  // Initialize Audio Logic
+  initAudioEngine();
 });
 
 /* ==========================================================================
-   4. MODAL & CONFETTI
+   5. RESPONSE MODAL & CONFETTI CELEBRATION
    ========================================================================== */
 window.handleResponse = function(type) {
   const modal = document.getElementById('response-modal');
@@ -115,13 +179,13 @@ window.handleResponse = function(type) {
 
   if (type === 'yes') {
     if (modalIcon) modalIcon.textContent = '💖🎉';
-    if (modalTitle) modalTitle.textContent = 'Woohoo! It’s a Date!';
-    if (modalDesc) modalDesc.textContent = 'I can’t wait! Pick a date and time, and I will take care of the rest.';
+    if (modalTitle) modalTitle.textContent = 'Yayyy!';
+    if (modalDesc) modalDesc.textContent = 'Good Girl 🎀 to btaa.... kab aur kaha Jana hai??? u choose it.....';
     fireConfettiExplosion();
   } else if (type === 'maybe') {
     if (modalIcon) modalIcon.textContent = '😉✨';
     if (modalTitle) modalTitle.textContent = 'Nice Try!';
-    if (modalDesc) modalDesc.textContent = 'That wasn’t really an option! Dinner & drinks on me soon?';
+    if (modalDesc) modalDesc.textContent = 'Nhi jana is not an option! 😜';
   }
 
   modal.classList.remove('hidden');
@@ -159,7 +223,7 @@ function fireConfettiExplosion() {
 }
 
 /* ==========================================================================
-   5. BACKGROUND CANVAS PARTICLES
+   6. BACKGROUND CANVAS PARTICLES ANIMATION
    ========================================================================== */
 function initParticles() {
   const canvas = document.getElementById('fx-canvas');
@@ -203,4 +267,3 @@ function initParticles() {
 
   animate();
 }
-
